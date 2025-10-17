@@ -75,7 +75,7 @@ mongoose
 const adminRoutes = require("./routes/admin");
 
 // Use routes
-app.use("/api/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 app.use("/api", publicRoutes);
 app.post("/api/clearTable/:tableNumber", async (req, res) => {
   try {
