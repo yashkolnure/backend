@@ -31,7 +31,7 @@ const app = express();
 const allowedOrigins = [
   'https://menu-two-puce.vercel.app',
   'https://menu-coral-tau.vercel.app',
-  'http://srv1070767.hstgr.cloud',
+  'https://srv1070767.hstgr.cloud',
   'http://localhost:3000', 
   'http://168.231.123.91', // for local development
 ];
