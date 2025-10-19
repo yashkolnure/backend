@@ -58,12 +58,11 @@ router.get("/restaurants", async (req, res) => {
 });
 
 // ADD new restaurant
-// ADD new restaurant
 router.post("/restaurants", async (req, res) => {
   try {
     const { name, email, password, address, logo, contact, membership_level } = req.body;
 
-    // ✅ Validate required fields
+    // ✅ Validate required fields (slug will be generated server-side)
     if (!name || !email || !password || !address || !logo || !contact || !membership_level) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -77,28 +76,9 @@ router.post("/restaurants", async (req, res) => {
     // ✅ Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // ✅ Create slug manually (no slugify)
-let baseSlug = name
-  .toLowerCase()
-  .trim()
-  .replace(/[^\w\s-]/g, "") // remove special characters
-  .replace(/\s+/g, "-");    // replace spaces with -
-
-// fallback if baseSlug is empty
-if (!baseSlug) baseSlug = "restaurant";
-
-let slug = baseSlug;
-let counter = 1;
-
-    // Ensure slug uniqueness
-    while (await Restaurant.exists({ slug })) {
-      slug = `${baseSlug}-${counter++}`;
-    }
-
-    // ✅ Create restaurant with slug
+    // ✅ Create restaurant with provided membership_level; slug assigned by model pre-save
     const restaurant = new Restaurant({
       name,
-      slug,
       email,
       passwordHash,
       address,
@@ -109,6 +89,7 @@ let counter = 1;
 
     await restaurant.save();
 
+    // Return restaurant including generated slug
     res.status(201).json(restaurant);
   } catch (err) {
     console.error(err);
