@@ -78,14 +78,17 @@ router.post("/restaurants", async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
 
     // ✅ Create slug manually (no slugify)
-    let baseSlug = name
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "") // remove special characters
-      .replace(/\s+/g, "-"); // replace spaces with -
+let baseSlug = name
+  .toLowerCase()
+  .trim()
+  .replace(/[^\w\s-]/g, "") // remove special characters
+  .replace(/\s+/g, "-");    // replace spaces with -
 
-    let slug = baseSlug;
-    let counter = 1;
+// fallback if baseSlug is empty
+if (!baseSlug) baseSlug = "restaurant";
+
+let slug = baseSlug;
+let counter = 1;
 
     // Ensure slug uniqueness
     while (await Restaurant.exists({ slug })) {
