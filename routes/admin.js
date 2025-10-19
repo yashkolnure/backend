@@ -855,6 +855,20 @@ router.get("/redirects", async (req, res) => {
 });
 
 
+router.get("/restaurants/slug/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const restaurant = await Restaurant.findOne({ slug }, "_id"); // only return _id
+    if (!restaurant) return res.status(404).json({ message: "Restaurant not found" });
+
+    res.json({ id: restaurant._id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 
 
