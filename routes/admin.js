@@ -58,15 +58,16 @@ router.get("/restaurants", async (req, res) => {
 });
 
 // ADD new restaurant
+// ADD new restaurant
 router.post("/restaurants", async (req, res) => {
   try {
     const { name, email, password, address, logo, contact, membership_level } = req.body;
 
     // ✅ Validate required fields
     if (!name || !email || !password || !address || !logo || !contact || !membership_level) {
-      return res.status(400).json({ message: "All fields including are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
- 
+
     // ✅ Check if email already exists
     const existing = await Restaurant.findOne({ email });
     if (existing) {
@@ -76,9 +77,25 @@ router.post("/restaurants", async (req, res) => {
     // ✅ Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // ✅ Create restaurant with provided membership_level
+    // ✅ Create slug manually (no slugify)
+    let baseSlug = name
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "") // remove special characters
+      .replace(/\s+/g, "-"); // replace spaces with -
+
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Ensure slug uniqueness
+    while (await Restaurant.exists({ slug })) {
+      slug = `${baseSlug}-${counter++}`;
+    }
+
+    // ✅ Create restaurant with slug
     const restaurant = new Restaurant({
       name,
+      slug,
       email,
       passwordHash,
       address,
